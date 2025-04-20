@@ -12,7 +12,7 @@ func (st *SearchTree[V, T]) Delete(start, end T) error {
 		return nil
 	}
 
-	intervl := interval[V, T]{
+	intervl := Interval[V, T]{
 		Start:      start,
 		End:        end,
 		AllowPoint: st.config.allowIntervalPoint,
@@ -30,7 +30,7 @@ func (st *SearchTree[V, T]) Delete(start, end T) error {
 	return nil
 }
 
-func delete[V, T any](n *node[V, T], intervl interval[V, T], cmp CmpFunc[T]) *node[V, T] {
+func delete[V, T any](n *node[V, T], intervl Interval[V, T], cmp CmpFunc[T]) *node[V, T] {
 	if n == nil {
 		return nil
 	}
@@ -142,7 +142,7 @@ func (st *MultiValueSearchTree[V, T]) Delete(start, end T) error {
 		return nil
 	}
 
-	intervl := interval[V, T]{
+	intervl := Interval[V, T]{
 		Start:      start,
 		End:        end,
 		AllowPoint: st.config.allowIntervalPoint,

@@ -10,7 +10,7 @@ const (
 )
 
 type node[V, T any] struct {
-	Interval interval[V, T]
+	Interval Interval[V, T]
 	MaxEnd   T
 	Right    *node[V, T]
 	Left     *node[V, T]
@@ -18,7 +18,7 @@ type node[V, T any] struct {
 	Size     int
 }
 
-func newNode[V, T any](intervl interval[V, T], c color) *node[V, T] {
+func newNode[V, T any](intervl Interval[V, T], c color) *node[V, T] {
 	return &node[V, T]{
 		Interval: intervl,
 		MaxEnd:   intervl.End,

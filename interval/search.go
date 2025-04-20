@@ -17,9 +17,9 @@ func (st *SearchTree[V, T]) Find(start, end T) (V, bool) {
 	return interval.Val, true
 }
 
-func find[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (interval[V, T], bool) {
+func find[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (Interval[V, T], bool) {
 	if root == nil {
-		return interval[V, T]{}, false
+		return Interval[V, T]{}, false
 	}
 
 	cur := root
@@ -34,7 +34,7 @@ func find[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (interval[V,
 		}
 	}
 
-	return interval[V, T]{}, false
+	return Interval[V, T]{}, false
 }
 
 // AnyIntersection returns a value which interval key intersects with the given start and end interval.
@@ -53,9 +53,9 @@ func (st *SearchTree[V, T]) AnyIntersection(start, end T) (V, bool) {
 	return interval.Val, true
 }
 
-func anyIntersections[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (interval[V, T], bool) {
+func anyIntersections[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (Interval[V, T], bool) {
 	if root == nil {
-		return interval[V, T]{}, false
+		return Interval[V, T]{}, false
 	}
 
 	cur := root
@@ -72,7 +72,7 @@ func anyIntersections[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) 
 		cur = next
 	}
 
-	return interval[V, T]{}, false
+	return Interval[V, T]{}, false
 }
 
 // AllIntersections returns a slice of values which interval key intersects with the given start and end interval.
@@ -86,14 +86,14 @@ func (st *SearchTree[V, T]) AllIntersections(start, end T) ([]V, bool) {
 		return vals, false
 	}
 
-	searchInOrder(st.root, start, end, st.cmp, func(it interval[V, T]) {
+	searchInOrder(st.root, start, end, st.cmp, func(it Interval[V, T]) {
 		vals = append(vals, it.Val)
 	})
 
 	return vals, len(vals) > 0
 }
 
-func searchInOrder[V, T any](n *node[V, T], start, end T, cmp CmpFunc[T], foundFn func(interval[V, T])) {
+func searchInOrder[V, T any](n *node[V, T], start, end T, cmp CmpFunc[T], foundFn func(Interval[V, T])) {
 	if n.Left != nil && cmp.lte(start, n.Left.MaxEnd) {
 		searchInOrder(n.Left, start, end, cmp, foundFn)
 	}
@@ -172,9 +172,9 @@ func (st *SearchTree[V, T]) Ceil(start, end T) (V, bool) {
 	return interval.Val, true
 }
 
-func ceil[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (interval[V, T], bool) {
+func ceil[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (Interval[V, T], bool) {
 	if root == nil {
-		return interval[V, T]{}, false
+		return Interval[V, T]{}, false
 	}
 
 	var ceil *node[V, T]
@@ -194,7 +194,7 @@ func ceil[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (interval[V,
 	}
 
 	if ceil == nil {
-		return interval[V, T]{}, false
+		return Interval[V, T]{}, false
 	}
 
 	return ceil.Interval, true
@@ -216,9 +216,9 @@ func (st *SearchTree[V, T]) Floor(start, end T) (V, bool) {
 	return interval.Val, true
 }
 
-func floor[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (interval[V, T], bool) {
+func floor[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (Interval[V, T], bool) {
 	if root == nil {
-		return interval[V, T]{}, false
+		return Interval[V, T]{}, false
 	}
 
 	var floor *node[V, T]
@@ -238,7 +238,7 @@ func floor[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) (interval[V
 	}
 
 	if floor == nil {
-		return interval[V, T]{}, false
+		return Interval[V, T]{}, false
 	}
 
 	return floor.Interval, true
@@ -288,7 +288,7 @@ func (st *SearchTree[V, T]) Select(k int) (V, bool) {
 	return interval.Val, true
 }
 
-func selectInterval[V, T any](root *node[V, T], k int) (interval[V, T], bool) {
+func selectInterval[V, T any](root *node[V, T], k int) (Interval[V, T], bool) {
 	cur := root
 	for cur != nil {
 		t := size(cur.Left)
@@ -303,7 +303,7 @@ func selectInterval[V, T any](root *node[V, T], k int) (interval[V, T], bool) {
 		}
 	}
 
-	return interval[V, T]{}, false
+	return Interval[V, T]{}, false
 }
 
 // Find returns the values which interval key exactly matches with the given start and end interval.
@@ -348,7 +348,7 @@ func (st *MultiValueSearchTree[V, T]) AllIntersections(start, end T) ([]V, bool)
 		return vals, false
 	}
 
-	searchInOrder(st.root, start, end, st.cmp, func(it interval[V, T]) {
+	searchInOrder(st.root, start, end, st.cmp, func(it Interval[V, T]) {
 		vals = append(vals, it.Vals...)
 	})
 

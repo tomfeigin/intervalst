@@ -13,7 +13,7 @@ func (st *SearchTree[V, T]) Insert(start, end T, val V) error {
 	st.mu.Lock()
 	defer st.mu.Unlock()
 
-	intervl := interval[V, T]{
+	intervl := Interval[V, T]{
 		Start:      start,
 		End:        end,
 		Val:        val,
@@ -30,7 +30,7 @@ func (st *SearchTree[V, T]) Insert(start, end T, val V) error {
 	return nil
 }
 
-func upsert[V, T any](n *node[V, T], intervl interval[V, T], cmp CmpFunc[T]) *node[V, T] {
+func upsert[V, T any](n *node[V, T], intervl Interval[V, T], cmp CmpFunc[T]) *node[V, T] {
 	if n == nil {
 		return newNode(intervl, red)
 	}
@@ -61,8 +61,8 @@ func (e EmptyValueListError) Error() string {
 	return string(e)
 }
 
-func newEmptyValueListError[V, T any](it interval[V, T], action string) error {
-	s := fmt.Sprintf("multi value interval search tree: cannot %s empty value list for interval (%v, %v)", action, it.Start, it.End)
+func newEmptyValueListError[V, T any](it Interval[V, T], action string) error {
+	s := fmt.Sprintf("multi value Interval search tree: cannot %s empty value list for Interval (%v, %v)", action, it.Start, it.End)
 	return EmptyValueListError(s)
 }
 
@@ -75,7 +75,7 @@ func newEmptyValueListError[V, T any](it interval[V, T], action string) error {
 func (st *MultiValueSearchTree[V, T]) Insert(start, end T, vals ...V) error {
 	st.mu.Lock()
 	defer st.mu.Unlock()
-	intervl := interval[V, T]{
+	intervl := Interval[V, T]{
 		Start:      start,
 		End:        end,
 		Vals:       vals,
@@ -96,7 +96,7 @@ func (st *MultiValueSearchTree[V, T]) Insert(start, end T, vals ...V) error {
 	return nil
 }
 
-func insert[V, T any](n *node[V, T], intervl interval[V, T], cmp CmpFunc[T]) *node[V, T] {
+func insert[V, T any](n *node[V, T], intervl Interval[V, T], cmp CmpFunc[T]) *node[V, T] {
 	if n == nil {
 		return newNode(intervl, red)
 	}
@@ -128,7 +128,7 @@ func insert[V, T any](n *node[V, T], intervl interval[V, T], cmp CmpFunc[T]) *no
 func (st *MultiValueSearchTree[V, T]) Upsert(start, end T, vals ...V) error {
 	st.mu.Lock()
 	defer st.mu.Unlock()
-	intervl := interval[V, T]{
+	intervl := Interval[V, T]{
 		Start:      start,
 		End:        end,
 		Vals:       vals,
