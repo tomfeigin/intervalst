@@ -146,3 +146,38 @@ func ExampleTreeWithIntervalPoint() {
 	// Output:
 	// event true
 }
+
+func ExampleSearchTree_VisitIntersections() {
+	cmpFn := func(x, y int) int { return x - y }
+
+	st := interval.NewSearchTree[string](cmpFn)
+
+	st.Insert(17, 19, "value1")
+	st.Insert(5, 8, "value2")
+	st.Insert(21, 24, "value3")
+	st.Insert(4, 8, "value4")
+	st.Insert(15, 18, "value5")
+	st.Insert(7, 10, "value6")
+
+	fmt.Println("Visiting all intervals that intersect with [9, 16]")
+
+	// Visit all intervals that intersect with [9, 16]
+	st.VisitIntersections(9, 16, func(node interval.Interval[string, int]) {
+		fmt.Println(node.Val)
+	})
+
+	fmt.Println("Visiting all intervals that intersect with [12, 50]")
+
+	// Visit all intervals that intersect with [12, 50]
+	st.VisitIntersections(12, 50, func(node interval.Interval[string, int]) {
+		fmt.Println(node.Val)
+	})
+	// Output:
+	// Visiting all intervals that intersect with [9, 16]
+	// value6
+	// value5
+	// Visiting all intervals that intersect with [12, 50]
+	// value5
+	// value1
+	// value3
+}

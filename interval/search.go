@@ -1,7 +1,9 @@
 package interval
 
+type VisitorFunc[V, T any] func(Interval[V, T])
+
 // Find returns the value which interval key exactly matches with the given start and end interval.
-// It returns true as the second return value if an exaclty matching interval key is found in the tree;
+// It returns true as the second return value if an exactly matching interval key is found in the tree;
 // otherwise, false.
 func (st *SearchTree[V, T]) Find(start, end T) (V, bool) {
 	st.mu.RLock()
@@ -75,35 +77,42 @@ func anyIntersections[V, T any](root *node[V, T], start, end T, cmp CmpFunc[T]) 
 	return Interval[V, T]{}, false
 }
 
-// AllIntersections returns a slice of values which interval key intersects with the given start and end interval.
-// It returns true as the second return value if any intersection is found in the tree; otherwise, false.
-func (st *SearchTree[V, T]) AllIntersections(start, end T) ([]V, bool) {
+// VisitIntersections traverses the tree in-order and calls the visitor function for each interval
+// that intersects with the given start and end interval. The visitor function receives the intersecting
+// interval as its argument.
+func (st *SearchTree[V, T]) VisitIntersections(start, end T, visitor VisitorFunc[V, T]) {
 	st.mu.RLock()
 	defer st.mu.RUnlock()
 
-	var vals []V
 	if st.root == nil {
-		return vals, false
+		return
 	}
 
-	searchInOrder(st.root, start, end, st.cmp, func(it Interval[V, T]) {
+	visitInOrder(st.root, start, end, st.cmp, visitor)
+}
+
+// AllIntersections returns a slice of values which Interval key intersects with the given start and end Interval.
+// It returns true as the second return value if any intersection is found in the tree; otherwise, false.
+func (st *SearchTree[V, T]) AllIntersections(start, end T) ([]V, bool) {
+	var vals []V
+	st.VisitIntersections(start, end, func(it Interval[V, T]) {
 		vals = append(vals, it.Val)
 	})
 
 	return vals, len(vals) > 0
 }
 
-func searchInOrder[V, T any](n *node[V, T], start, end T, cmp CmpFunc[T], foundFn func(Interval[V, T])) {
+func visitInOrder[V, T any](n *node[V, T], start, end T, cmp CmpFunc[T], visitor VisitorFunc[V, T]) {
 	if n.Left != nil && cmp.lte(start, n.Left.MaxEnd) {
-		searchInOrder(n.Left, start, end, cmp, foundFn)
+		visitInOrder(n.Left, start, end, cmp, visitor)
 	}
 
 	if n.Interval.intersects(start, end, cmp) {
-		foundFn(n.Interval)
+		visitor(n.Interval)
 	}
 
 	if n.Right != nil && cmp.lte(n.Interval.Start, end) {
-		searchInOrder(n.Right, start, end, cmp, foundFn)
+		visitInOrder(n.Right, start, end, cmp, visitor)
 	}
 }
 
@@ -337,18 +346,25 @@ func (st *MultiValueSearchTree[V, T]) AnyIntersection(start, end T) ([]V, bool) 
 	return interval.Vals, true
 }
 
-// AllIntersections returns a slice of values which interval key intersects with the given start and end interval.
-// It returns true as the second return value if any intersection is found in the tree; otherwise, false.
-func (st *MultiValueSearchTree[V, T]) AllIntersections(start, end T) ([]V, bool) {
+// VisitIntersections traverses the tree in-order and calls the visitor function for each interval
+// that intersects with the given start and end interval. The visitor function receives the intersecting
+// interval as its argument.
+func (st *MultiValueSearchTree[V, T]) VisitIntersections(start, end T, visitor VisitorFunc[V, T]) {
 	st.mu.RLock()
 	defer st.mu.RUnlock()
 
-	var vals []V
 	if st.root == nil {
-		return vals, false
+		return
 	}
 
-	searchInOrder(st.root, start, end, st.cmp, func(it Interval[V, T]) {
+	visitInOrder(st.root, start, end, st.cmp, visitor)
+}
+
+// AllIntersections returns a slice of values which Interval key intersects with the given start and end Interval.
+// It returns true as the second return value if any intersection is found in the tree; otherwise, false.
+func (st *MultiValueSearchTree[V, T]) AllIntersections(start, end T) ([]V, bool) {
+	var vals []V
+	st.VisitIntersections(start, end, func(it Interval[V, T]) {
 		vals = append(vals, it.Vals...)
 	})
 
